@@ -1,24 +1,22 @@
 #!/bin/bash
 
-# Proveri da li je unet argument
+# Check if an argument is provided
 if [ -z "$1" ]; then
-  echo "Koriscenje: $0 NOVI_NAZIV"
+  echo "Usage: $0 NEW_NAME"
   exit 1
 fi
 
-# Novi naziv koji će zameniti '__SERVICE_NAME__'
-NOVI_NAZIV=$1
+# New name to replace '__SERVICE_NAME__'
+NEW_NAME=$1
 
-# Prolazak kroz sve fajlove rekurzivno u trenutnom direktorijumu, isključujući .sh fajlove
+# Iterate through all files recursively in the current directory, excluding .sh files
 find "$(pwd)" -type f ! -name "*.sh" | while IFS= read -r file; do
-  # Postavljanje odgovarajuće kodne stranice
+  # Set the appropriate locale for character encoding handling
   if [[ "$OSTYPE" == "darwin"* ]]; then
-    # macOS varijanta, koristi LC_CTYPE i zahteva .bak ekstenziju
-    LC_CTYPE=C sed -i .bak "s/__SERVICE_NAME__/$NOVI_NAZIV/g" "$file" && rm "${file}.bak"
+    # macOS variant: uses LC_CTYPE and requires a .bak extension for inline replacement
+    LC_CTYPE=C sed -i .bak "s/__SERVICE_NAME__/$NEW_NAME/g" "$file" && rm "${file}.bak"
   else
-    # Linux varijanta, koristi LC_ALL bez dodatne ekstenzije
-    LC_ALL=C sed -i "s/__SERVICE_NAME__/$NOVI_NAZIV/g" "$file"
+    # Linux variant: uses LC_ALL without needing a backup extension
+    LC_ALL=C sed -i "s/__SERVICE_NAME__/$NEW_NAME/g" "$file"
   fi
 done
-
-echo "Zamenjen __SERVICE_NAME__ sa $NOVI_NAZIV u svim fajlovima, osim u .sh fajlovima."
