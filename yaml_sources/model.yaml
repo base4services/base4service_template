@@ -1,0 +1,12 @@
+option:
+
+  __meta:
+
+    table_name: __SERVICE_NAME___options
+    app: __SERVICE_NAME__
+
+  key:
+    field: "fields.CharField(255, null=False, unique=True)"
+
+  value:
+    field: "fields.TextField(null=True)"
