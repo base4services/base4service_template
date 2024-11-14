@@ -1,7 +1,7 @@
 from typing import Dict
 
-from base4.utilities.logging.setup import class_exception_traceback_logging, get_logger
 from base4.service.base import BaseService
+from base4.utilities.logging.setup import class_exception_traceback_logging, get_logger
 from fastapi.exceptions import HTTPException
 
 import services.__SERVICE_NAME__.models as models
@@ -9,8 +9,9 @@ import services.__SERVICE_NAME__.schemas as schemas
 
 from ._db_conn import get_conn_name
 
-
 logger = get_logger()
+
+
 @class_exception_traceback_logging(logger)
 class OptionService(BaseService[models.Option]):
     def __init__(self):

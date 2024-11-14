@@ -17,7 +17,12 @@ endpoints_config = {
 }
 
 create_endpoints(
-    router, endpoints_config, service_name='__SERVICE_NAME__', singular_object_name='option', plural_object_name='options', functions={'get_single', 'create', 'update'}
+    router,
+    endpoints_config,
+    service_name='__SERVICE_NAME__',
+    singular_object_name='option',
+    plural_object_name='options',
+    functions={'get_single', 'create', 'update'},
 )
 
 
