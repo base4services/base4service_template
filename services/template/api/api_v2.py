@@ -65,7 +65,7 @@ class OptionAPI(BaseAPIController):
 	
 	@api(
 		permissions=[],
-		path='/options/upload',
+		path='/upload',
 		methods=['POST'],
 		upload_allowed_file_types=["image/jpeg", "image/png", "image/svg"],
 		upload_max_file_size=5 * 1024 * 1024,  # 5 MB
