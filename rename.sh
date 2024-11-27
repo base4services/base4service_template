@@ -1,22 +1,31 @@
 #!/bin/bash
 
-# Check if an argument is provided
+# Proveri da li su zadati argumenti
 if [ -z "$1" ]; then
-  echo "Usage: $0 NEW_NAME"
+  echo "Usage: $0 NEW_NAME [DIRECTORY]"
   exit 1
 fi
 
-# New name to replace '__SERVICE_NAME__'
+# Nova vrednost za zamenu '__SERVICE_NAME__'
 NEW_NAME=$1
 
-# Iterate through all files recursively in the current directory, excluding .sh files
-find "$(pwd)" -type f ! -name "*.sh" | while IFS= read -r file; do
-  # Set the appropriate locale for character encoding handling
+# Direktorijum za pretragu; podrazumevani je trenutni direktorijum
+TARGET_DIR=${2:-$(pwd)}
+
+# Proveri da li direktorijum postoji
+if [ ! -d "$TARGET_DIR" ]; then
+  echo "Error: Directory $TARGET_DIR does not exist."
+  exit 1
+fi
+
+# Iteriraj kroz sve fajlove rekurzivno u zadatom direktorijumu, izuzimajući .sh fajlove
+find "$TARGET_DIR" -type f ! -name "*.sh" | while IFS= read -r file; do
+  # Postavi odgovarajući lokal za rukovanje kodiranjem
   if [[ "$OSTYPE" == "darwin"* ]]; then
-    # macOS variant: uses LC_CTYPE and requires a .bak extension for inline replacement
+    # macOS varijanta: koristi LC_CTYPE i zahteva .bak ekstenziju za zamenu u mestu
     LC_CTYPE=C sed -i .bak "s/__SERVICE_NAME__/$NEW_NAME/g" "$file" && rm "${file}.bak"
   else
-    # Linux variant: uses LC_ALL without needing a backup extension
+    # Linux varijanta: koristi LC_ALL bez potrebe za rezervnim ekstenzijama
     LC_ALL=C sed -i "s/__SERVICE_NAME__/$NEW_NAME/g" "$file"
   fi
 done
