@@ -16,7 +16,7 @@ from io import BytesIO
 
 
 class TestSVC(TestBaseTenants):
-	services = ['tenants', 'test']
+	services = ['tenants', '__SERVICE_NAME__']
 	
 	async def setup(self):
 		await super().setup()
