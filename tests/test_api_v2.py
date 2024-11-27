@@ -22,7 +22,7 @@ class TestSVC(TestBaseTenants):
 		await super().setup()
 	
 	async def test_healthy(self):
-		res = await self.api('GET', '/api/test/healthy')
+		res = await self.api('GET', '/api/v2/__SERVICE_NAME__/healthy')
 		assert res.status_code == 200
 		assert res.json() == {'healthy': True}
 	
