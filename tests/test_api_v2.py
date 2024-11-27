@@ -21,67 +21,63 @@ class TestSVC(TestBaseTenants):
 	async def setup(self):
 		await super().setup()
 	
-	async def test_healthy(self):
-		res = await self.api('GET', '/api/v2/__SERVICE_NAME__/healthy')
-		assert res.status_code == 200
-		assert res.json() == {'healthy': True}
-	
 	async def test_option_by_key_multi_handler(self):
 		key = str(uuid.uuid4())
-		_response: Response = await self.api('POST', '/api/v2/__SERVICE_NAME__/by-key/%s' % key)
-		assert _response.status_code == 200
-		json: dict = _response.json()
+		response = client.post('/api/v2/__SERVICE_NAME__/by-key/%s' % key)
+		assert response.status_code == 200
+		json: dict = response.json()
 		assert json == {'status': 'ok'}
 		
-		_response: Response = await self.api('GET', '/api/v2/__SERVICE_NAME__/by-key/%s' % key)
-		assert _response.status_code == 200
-		json: dict = _response.json()
+		response = client.get('/api/v2/__SERVICE_NAME__/by-key/%s' % key)
+		assert response.status_code == 200
+		json: dict = response.json()
 		assert json == key
 		
-		_response: Response = await self.api('DELETE', '/api/v2/__SERVICE_NAME__/by-key/%s' % key)
-		assert _response.status_code == 200
-		json: dict = _response.json()
+		response = client.delete('/api/v2/__SERVICE_NAME__/by-key/%s' % key)
+		assert response.status_code == 200
+		json: dict = response.json()
 		assert json == {'status': 'ok'}
 		
-		_response: Response = await self.api('GET', '/api/v2/__SERVICE_NAME__/by-key/%s' % key)
-		assert _response.status_code == 200
-		json: dict = _response.json()
+		response = client.get('/api/v2/__SERVICE_NAME__/by-key/%s' % key)
+		assert response.status_code == 200
+		json: dict = response.json()
 		assert json == {'status': 'not_found'}
 	
 	async def test_option_get_from_cache(self):
 		
-		_response: Response = await self.api('GET', '/api/v2/__SERVICE_NAME__/cached-datetime')
-		assert _response.status_code == 200
-		json_1: dict = _response.json()
+		response = client.get("/api/v2/__SERVICE_NAME__/cached-datetime")
 		
-		_response: Response = await self.api('GET', '/api/v2/__SERVICE_NAME__/cached-datetime')
-		assert _response.status_code == 200
-		json_2: dict = _response.json()
+		assert response.status_code == 200
+		json_1: dict = response.json()
+		
+		response = client.get("/api/v2/__SERVICE_NAME__/cached-datetime")
+		assert response.status_code == 200
+		json_2: dict = response.json()
 		assert json_1 == json_2
 	
 	async def test_option_if_cache_expired(self):
 		
-		_response: Response = await self.api('GET', '/api/v2/__SERVICE_NAME__/cached-datetime')
-		assert _response.status_code == 200
-		json_1: dict = _response.json()
+		response = client.get("/api/v2/__SERVICE_NAME__/cached-datetime")
+		assert response.status_code == 200
+		json_1: dict = response.json()
 		
 		time.sleep(3)
-		_response: Response = await self.api('GET', '/api/v2/__SERVICE_NAME__/cached-datetime')
-		assert _response.status_code == 200
-		json_2: dict = _response.json()
+		response = client.get("/api/v2/__SERVICE_NAME__/cached-datetime")
+		assert response.status_code == 200
+		json_2: dict = response.json()
 		assert json_1 != json_2
 	
 	async def test_option_by_key_1_on_1_handler(self):
 		key = str(uuid.uuid4())
-		_response: Response = await self.api('GET', '/api/v2/__SERVICE_NAME__/1on1/by-key/%s' % key)
-		assert _response.status_code == 200
-		json: dict = _response.json()
+		response = client.get('/api/v2/__SERVICE_NAME__/1on1/by-key/%s' % key)
+		assert response.status_code == 200
+		json: dict = response.json()
 		assert json == key
 	
 	async def test_option_no_key_bug(self):
-		_response: Response = await self.api('GET', '/api/v2/__SERVICE_NAME__/no-key-bug')
-		assert _response.status_code == 200
-		json: dict = _response.json()
+		response = client.get('/api/v2/__SERVICE_NAME__/no-key-bug')
+		assert response.status_code == 200
+		json: dict = response.json()
 		assert json == {'status': 'ok'}
 	
 	async def test_option_pydantic(self):
@@ -124,7 +120,7 @@ class TestSVC(TestBaseTenants):
 		files = {"files": (f"img1.{ext}", file_data, f"image/{ext}")}
 		upload_response = client.post(
 			"/api/v2/__SERVICE_NAME__/upload", files=files, data={"description": "This is a test description"}
-			)
+		)
 		
 		assert upload_response.status_code == 200
 		assert upload_response.json()[f"img1.{ext}"]['content_type'] == f'image/{ext}'

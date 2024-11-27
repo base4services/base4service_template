@@ -14,3 +14,4 @@ import_all_from_dir(
 )
 
 app.include_router(router, prefix="/api/__SERVICE_NAME__")
+app.include_router(router, prefix="/api/v2/__SERVICE_NAME__")
