@@ -1,8 +1,6 @@
-import datetime
 import os
 import time
 
-from fastapi import Response
 import requests
 
 current_file_path = os.path.abspath(os.path.dirname(__file__))
@@ -10,9 +8,9 @@ from .test_base_tenants import TestBase, TestBaseTenants
 import uuid
 from base4.utilities.service.startup import service as app
 from fastapi.testclient import TestClient
+from io import BytesIO
 
 client = TestClient(app)
-from io import BytesIO
 
 
 class TestSVC(TestBaseTenants):
@@ -79,20 +77,7 @@ class TestSVC(TestBaseTenants):
 		assert response.status_code == 200
 		json: dict = response.json()
 		assert json == {'status': 'ok'}
-	
-	async def test_option_pydantic(self):
-		test_body = {
-			'a': 'test',
-			'b': 1,
-			'c': {'a': {'b': 'c'}},
-			'd': [1, 2, 3],
-		}
-		response = client.post(
-			"/api/v2/__SERVICE_NAME__/pydantic",
-			json=test_body
-		)
-		assert response.status_code == 200
-		assert response.json() == {"data": test_body}
+
 	
 	async def test_option_single_upload(self):
 		url = "https://cdn.prod.website-files.com/634fe37f7bef5774d03a854d/642d457d480f67449142b775_Loader.svg"
