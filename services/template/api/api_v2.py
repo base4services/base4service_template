@@ -14,7 +14,7 @@ import os
 rdb = RedisClientHandler().redis_client
 
 
-class OptionAPI(BaseAPIController):
+class APIV2(BaseAPIController):
 	def __init__(self, router: APIRouter):
 		self.service = ''
 		super().__init__(router)
@@ -71,8 +71,7 @@ class OptionAPI(BaseAPIController):
 		upload_max_file_size=5 * 1024 * 1024,  # 5 MB
 		upload_max_files=5,
 	)
-	async def option_upload(self, request: Request, description: Optional[str] = Form(None),
-							files: List[UploadFile] = File(...)):
+	async def option_upload(self, request: Request, description: Optional[str] = Form(None),files: List[UploadFile] = File(...)):
 		project_root = str(get_project_root())
 		
 		os.makedirs(f"{project_root}/tests/uploads", exist_ok=True)
@@ -93,6 +92,14 @@ class OptionAPI(BaseAPIController):
 
 		return results
 
-
-OptionAPI(router)
+	@api(
+		permissions=['ROOT'],
+		path='/tenants',
+		methods=['GET'],
+	)
+	async def tenants(self, request: Request):
+		return {'status': 'ok'}
+	
+	
+APIV2(router)
 app.include_router(router, prefix='/api/v2/__SERVICE_NAME__')

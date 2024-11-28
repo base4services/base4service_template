@@ -4,80 +4,91 @@ import time
 import requests
 
 current_file_path = os.path.abspath(os.path.dirname(__file__))
-from .test_base_tenants import TestBase, TestBaseTenants
+from .test_base_tenants import TestBase, TestBaseTenants, TestBaseTenantsAPIV2
 import uuid
 from base4.utilities.service.startup import service as app
 from fastapi.testclient import TestClient
 from io import BytesIO
 
-client = TestClient(app)
 
-
-class TestSVC(TestBaseTenants):
-	services = ['tenants', '__SERVICE_NAME__']
+class TestSVC(TestBaseTenantsAPIV2):
+	services = ['tenants', 'nemanja']
 	
 	async def setup(self):
 		await super().setup()
 	
 	async def test_option_by_key_multi_handler(self):
 		key = str(uuid.uuid4())
-		response = client.post('/api/v2/__SERVICE_NAME__/by-key/%s' % key)
+		response = await self.request(method='post', url='/api/v2/nemanja/by-key/%s' % key)
 		assert response.status_code == 200
 		json: dict = response.json()
 		assert json == {'status': 'ok'}
 		
-		response = client.get('/api/v2/__SERVICE_NAME__/by-key/%s' % key)
+		response = await self.request(method='get', url='/api/v2/nemanja/by-key/%s' % key)
 		assert response.status_code == 200
 		json: dict = response.json()
 		assert json == key
 		
-		response = client.delete('/api/v2/__SERVICE_NAME__/by-key/%s' % key)
+		response = await self.request(method='delete', url='/api/v2/nemanja/by-key/%s' % key)
 		assert response.status_code == 200
 		json: dict = response.json()
 		assert json == {'status': 'ok'}
 		
-		response = client.get('/api/v2/__SERVICE_NAME__/by-key/%s' % key)
+		response = await self.request(method='get', url='/api/v2/nemanja/by-key/%s' % key)
 		assert response.status_code == 200
 		json: dict = response.json()
 		assert json == {'status': 'not_found'}
 	
 	async def test_option_get_from_cache(self):
 		
-		response = client.get("/api/v2/__SERVICE_NAME__/cached-datetime")
+		response = await self.request(method='get', url="/api/v2/nemanja/cached-datetime")
 		
 		assert response.status_code == 200
 		json_1: dict = response.json()
 		
-		response = client.get("/api/v2/__SERVICE_NAME__/cached-datetime")
+		response = await self.request(method='get', url="/api/v2/nemanja/cached-datetime")
 		assert response.status_code == 200
 		json_2: dict = response.json()
 		assert json_1 == json_2
 	
 	async def test_option_if_cache_expired(self):
 		
-		response = client.get("/api/v2/__SERVICE_NAME__/cached-datetime")
+		response = await self.request(method='get', url="/api/v2/nemanja/cached-datetime")
 		assert response.status_code == 200
 		json_1: dict = response.json()
 		
 		time.sleep(3)
-		response = client.get("/api/v2/__SERVICE_NAME__/cached-datetime")
+		response = await self.request(method='get', url="/api/v2/nemanja/cached-datetime")
 		assert response.status_code == 200
 		json_2: dict = response.json()
 		assert json_1 != json_2
 	
 	async def test_option_by_key_1_on_1_handler(self):
 		key = str(uuid.uuid4())
-		response = client.get('/api/v2/__SERVICE_NAME__/1on1/by-key/%s' % key)
+		response = await self.request(method='get', url='/api/v2/nemanja/1on1/by-key/%s' % key)
 		assert response.status_code == 200
 		json: dict = response.json()
 		assert json == key
 	
 	async def test_option_no_key_bug(self):
-		response = client.get('/api/v2/__SERVICE_NAME__/no-key-bug')
+		response = await self.request(method='get', url='/api/v2/nemanja/no-key-bug')
 		assert response.status_code == 200
 		json: dict = response.json()
 		assert json == {'status': 'ok'}
-
+	
+	# async def test_option_pydantic(self):
+	# 	test_body = {
+	# 		'a': 'test',
+	# 		'b': 1,
+	# 		'c': {'a': {'b': 'c'}},
+	# 		'd': [1, 2, 3],
+	# 	}
+	# 	response = await self.request(method='post', url=
+	# 		"/api/v2/nemanja/pydantic",
+	# 		json=test_body
+	# 	)
+	# 	assert response.status_code == 200
+	# 	assert response.json() == {"data": test_body}
 	
 	async def test_option_single_upload(self):
 		url = "https://cdn.prod.website-files.com/634fe37f7bef5774d03a854d/642d457d480f67449142b775_Loader.svg"
@@ -88,7 +99,7 @@ class TestSVC(TestBaseTenants):
 		
 		file_data = BytesIO(response.content)  # Create a file-like object
 		files = {"files": (f"img1.{ext}", file_data, f"image/{ext}")}
-		upload_response = client.post("/api/v2/__SERVICE_NAME__/upload", files=files)
+		upload_response = await self.request(method='post', url="/api/v2/nemanja/upload", files=files)
 		
 		assert upload_response.status_code == 200
 		assert upload_response.json()[f"img1.{ext}"]['content_type'] == f'image/{ext}'
@@ -103,9 +114,10 @@ class TestSVC(TestBaseTenants):
 		
 		file_data = BytesIO(response.content)  # Create a file-like object
 		files = {"files": (f"img1.{ext}", file_data, f"image/{ext}")}
-		upload_response = client.post(
-			"/api/v2/__SERVICE_NAME__/upload", files=files, data={"description": "This is a test description"}
-		)
+		upload_response = await self.request(
+			method='post', url=
+			"/api/v2/nemanja/upload", files=files, body={"description": "This is a test description"}
+			)
 		
 		assert upload_response.status_code == 200
 		assert upload_response.json()[f"img1.{ext}"]['content_type'] == f'image/{ext}'
@@ -127,7 +139,7 @@ class TestSVC(TestBaseTenants):
 			file_data = BytesIO(response.content)  # Create a file-like object
 			files.append(("files", (f"img{idx}.{ext}", file_data, f"image/{ext}")))
 		
-		upload_response = client.post("/api/v2/__SERVICE_NAME__/upload", files=files)
+		upload_response = await self.request(method='post', url="/api/v2/nemanja/upload", files=files)
 		
 		assert upload_response.status_code == 200
 		for idx, img in enumerate(
@@ -149,7 +161,7 @@ class TestSVC(TestBaseTenants):
 			("files", ("img4.svg", BytesIO(b"Fake content 4"), "image/svg")),
 			("files", ("img4.svg", BytesIO(b"Fake content 4"), "image/svg")),
 		]
-		upload_response = client.post("/api/v2/__SERVICE_NAME__/upload", files=files)
+		upload_response = await self.request(method='post', url="/api/v2/nemanja/upload", files=files)
 		
 		assert upload_response.status_code == 400
 	
@@ -160,6 +172,14 @@ class TestSVC(TestBaseTenants):
 			("files", ("img3.svg", BytesIO(b"Fake content 3"), "image/svg")),
 			("files", ("img4.svg", BytesIO(b"Fake content 4"), "image/svg")),
 		]
-		upload_response = client.post("/api/v2/__SERVICE_NAME__/upload", files=files)
+		upload_response = await self.request(method='post', url="/api/v2/nemanja/upload", files=files)
 		
 		assert upload_response.status_code == 200
+	
+	async def test_x_tenant_authorized_api(self):
+		response = await self.request(
+			method='get', url='/api/v2/nemanja/tenants', headers={'X-Tenant-ID': str(self.id_tenant)}
+			)
+		assert response.status_code == 200
+		json: dict = response.json()
+		assert json == {'status': 'ok'}
