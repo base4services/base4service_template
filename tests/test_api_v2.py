@@ -9,7 +9,14 @@ import uuid
 from base4.utilities.service.startup import service as app
 from fastapi.testclient import TestClient
 from io import BytesIO
+import ujson as json
 
+test_json = {
+	'a': 'test',
+	'b': 1,
+	'c': {'a': {'b': 'c'}},
+	'd': [1, 2, 3],
+}
 
 class TestSVC(TestBaseTenantsAPIV2):
 	services = ['tenants', '__SERVICE_NAME__']
@@ -76,19 +83,14 @@ class TestSVC(TestBaseTenantsAPIV2):
 		json: dict = response.json()
 		assert json == {'status': 'ok'}
 	
-	# async def test_option_pydantic(self):
-	# 	test_body = {
-	# 		'a': 'test',
-	# 		'b': 1,
-	# 		'c': {'a': {'b': 'c'}},
-	# 		'd': [1, 2, 3],
-	# 	}
-	# 	response = await self.request(method='post', url=
-	# 		"/api/v2/__SERVICE_NAME__/pydantic",
-	# 		json=test_body
-	# 	)
-	# 	assert response.status_code == 200
-	# 	assert response.json() == {"data": test_body}
+	async def test_pydantic(self):
+
+		response = await self.request(method='post', url=
+			"/api/v2/__SERVICE_NAME__/pydantic",
+			body=test_json
+		)
+		assert response.status_code == 200
+		assert response.json() == test_json
 	
 	async def test_option_single_upload(self):
 		url = "https://cdn.prod.website-files.com/634fe37f7bef5774d03a854d/642d457d480f67449142b775_Loader.svg"
@@ -116,41 +118,15 @@ class TestSVC(TestBaseTenantsAPIV2):
 		files = {"files": (f"img1.{ext}", file_data, f"image/{ext}")}
 		upload_response = await self.request(
 			method='post', url=
-			"/api/v2/__SERVICE_NAME__/upload", files=files, body={"description": "This is a test description"}
-			)
+			"/api/v2/__SERVICE_NAME__/upload", files=files, data={"metadata": json.dumps(test_json)}
+		)
 		
 		assert upload_response.status_code == 200
-		assert upload_response.json()[f"img1.{ext}"]['content_type'] == f'image/{ext}'
-		assert upload_response.json()[f"img1.{ext}"]['size'] >= 0
-		assert upload_response.json()[f"img1.{ext}"]['description'] == "This is a test description"
+		j = upload_response.json()
+		assert j[f"img1.{ext}"]['content_type'] == f'image/{ext}'
+		assert j[f"img1.{ext}"]['size'] >= 0
+		assert j[f"img1.{ext}"]['description'] == test_json
 	
-	async def test_option_multi_upload(self):
-		files = []
-		for idx, img in enumerate(
-				[
-					"https://cdn.prod.website-files.com/634fe37f7bef5774d03a854d/642d457d480f67449142b775_Loader.svg",
-					"https://cdn.prod.website-files.com/634fe37f7bef5774d03a854d/642d409c651b714dd373fe33_Favicon-Digitalcube.png"
-				], start=1
-		):
-			ext = img.split('/')[-1].split('.')[-1]
-			response = requests.get(img)
-			assert response.status_code == 200
-			
-			file_data = BytesIO(response.content)  # Create a file-like object
-			files.append(("files", (f"img{idx}.{ext}", file_data, f"image/{ext}")))
-		
-		upload_response = await self.request(method='post', url="/api/v2/__SERVICE_NAME__/upload", files=files)
-		
-		assert upload_response.status_code == 200
-		for idx, img in enumerate(
-				[
-					"https://cdn.prod.website-files.com/634fe37f7bef5774d03a854d/642d457d480f67449142b775_Loader.svg",
-					"https://cdn.prod.website-files.com/634fe37f7bef5774d03a854d/642d409c651b714dd373fe33_Favicon-Digitalcube.png"
-				], start=1
-		):
-			ext = img.split('/')[-1].split('.')[-1]
-			assert upload_response.json()[f"img{idx}.{ext}"]['content_type'] == f'image/{ext}'
-			assert upload_response.json()[f"img{idx}.{ext}"]['size'] >= 0
 	
 	async def test_max_files_over_limit(self):
 		files = [

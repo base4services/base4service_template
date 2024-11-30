@@ -10,9 +10,20 @@ from fastapi import File, UploadFile, Form
 from base4.utilities.files import get_project_root
 from base4.utilities.db.redis import RedisClientHandler
 import os
-
+from pydantic import BaseModel
 rdb = RedisClientHandler().redis_client
+import ujson as json
 
+
+class JSONTest(BaseModel):
+	a: str
+	b: int
+	c: dict
+	d: list
+
+class Description(BaseModel):
+	description: str
+	
 
 class APIV2(BaseAPIController):
 	def __init__(self, router: APIRouter):
@@ -52,7 +63,7 @@ class APIV2(BaseAPIController):
 		path='/cached-datetime',
 		methods=['GET'],
 	)
-	async def cached_datetime(self, request: Request):
+	async def option_cached_datetime(self, request: Request):
 		return {'datetime': datetime.datetime.now().isoformat()}
 	
 	@api(
@@ -60,8 +71,16 @@ class APIV2(BaseAPIController):
 		path='/1on1/by-key/{key}',
 		methods=['GET'],
 	)
-	async def _1on1_handler(self, key: str, request: Request):
+	async def option_1on1_handler(self, key: str, request: Request):
 		return key
+	
+	@api(
+		permissions=[],
+		path='/pydantic',
+		methods=['POST'],
+	)
+	async def pydantic_obj(self, data: JSONTest, request: Request):
+		return data
 	
 	@api(
 		permissions=[],
@@ -71,10 +90,17 @@ class APIV2(BaseAPIController):
 		upload_max_file_size=5 * 1024 * 1024,  # 5 MB
 		upload_max_files=5,
 	)
-	async def upload(self, request: Request, description: Optional[str] = Form(None),files: List[UploadFile] = File(...)):
+	async def upload(self, request: Request, metadata: Optional[str] = Form(None), files: List[UploadFile] = File(...)):
 		project_root = str(get_project_root())
 		
 		os.makedirs(f"{project_root}/tests/uploads", exist_ok=True)
+		
+		# Parsiranje JSON-a iz stringa
+		if metadata:
+			try:
+				metadata = json.loads(metadata)
+			except json.JSONDecodeError:
+				pass
 		
 		results = {}
 		for file in files:
@@ -87,7 +113,7 @@ class APIV2(BaseAPIController):
 			results[file.filename] = {
 				"content_type": file.content_type,
 				"size":         len(content),
-				"description":  description,
+				"description":  metadata,
 			}
 
 		return results
