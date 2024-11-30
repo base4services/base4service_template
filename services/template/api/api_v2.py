@@ -31,7 +31,7 @@ class APIV2(BaseAPIController):
 		super().__init__(router)
 	
 	@api(
-		permissions=[],
+		roles=[],
 		path='/by-key/{key}',
 		methods=['GET', 'POST', 'DELETE'],
 	)
@@ -50,7 +50,7 @@ class APIV2(BaseAPIController):
 		return {}
 	
 	@api(
-		permissions=[],
+		roles=[],
 		path='/no-key-bug',
 		methods=['GET', 'POST'],
 	)
@@ -58,7 +58,7 @@ class APIV2(BaseAPIController):
 		return {'status': 'ok'}
 	
 	@api(
-		permissions=[],
+		roles=[],
 		cache=2,
 		path='/cached-datetime',
 		methods=['GET'],
@@ -67,7 +67,7 @@ class APIV2(BaseAPIController):
 		return {'datetime': datetime.datetime.now().isoformat()}
 	
 	@api(
-		permissions=[],
+		roles=[],
 		path='/1on1/by-key/{key}',
 		methods=['GET'],
 	)
@@ -75,7 +75,7 @@ class APIV2(BaseAPIController):
 		return key
 	
 	@api(
-		permissions=[],
+		roles=[],
 		path='/pydantic',
 		methods=['POST'],
 	)
@@ -83,7 +83,7 @@ class APIV2(BaseAPIController):
 		return data
 	
 	@api(
-		permissions=[],
+		roles=[],
 		path='/upload',
 		methods=['POST'],
 		upload_allowed_file_types=["image/jpeg", "image/png", "image/svg"],
@@ -119,7 +119,7 @@ class APIV2(BaseAPIController):
 		return results
 
 	@api(
-		permissions=['ROOT'],
+		roles=['ROOT'],
 		path='/tenants',
 		methods=['GET'],
 	)
