@@ -43,7 +43,7 @@ class APIV2(BaseAPIController):
 		path='/no-key-bug',
 		methods=['GET', 'POST'],
 	)
-	async def option_no_key_bug(self, request: Request):
+	async def no_key_bug(self, request: Request):
 		return {'status': 'ok'}
 	
 	@api(
@@ -52,7 +52,7 @@ class APIV2(BaseAPIController):
 		path='/cached-datetime',
 		methods=['GET'],
 	)
-	async def option_cached_datetime(self, request: Request):
+	async def cached_datetime(self, request: Request):
 		return {'datetime': datetime.datetime.now().isoformat()}
 	
 	@api(
@@ -60,7 +60,7 @@ class APIV2(BaseAPIController):
 		path='/1on1/by-key/{key}',
 		methods=['GET'],
 	)
-	async def option_1on1_handler(self, key: str, request: Request):
+	async def _1on1_handler(self, key: str, request: Request):
 		return key
 	
 	@api(
@@ -71,7 +71,7 @@ class APIV2(BaseAPIController):
 		upload_max_file_size=5 * 1024 * 1024,  # 5 MB
 		upload_max_files=5,
 	)
-	async def option_upload(self, request: Request, description: Optional[str] = Form(None),files: List[UploadFile] = File(...)):
+	async def upload(self, request: Request, description: Optional[str] = Form(None),files: List[UploadFile] = File(...)):
 		project_root = str(get_project_root())
 		
 		os.makedirs(f"{project_root}/tests/uploads", exist_ok=True)
