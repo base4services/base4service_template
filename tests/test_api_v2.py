@@ -120,13 +120,11 @@ class TestSVC(TestBaseTenantsAPIV2):
 			method='post', url=
 			"/api/v2/__SERVICE_NAME__/upload", files=files, data={"metadata": json.dumps(test_json)}
 		)
-		
 		assert upload_response.status_code == 200
 		j = upload_response.json()
 		assert j[f"img1.{ext}"]['content_type'] == f'image/{ext}'
 		assert j[f"img1.{ext}"]['size'] >= 0
 		assert j[f"img1.{ext}"]['description'] == test_json
-	
 	
 	async def test_max_files_over_limit(self):
 		files = [
@@ -138,7 +136,6 @@ class TestSVC(TestBaseTenantsAPIV2):
 			("files", ("img4.svg", BytesIO(b"Fake content 4"), "image/svg")),
 		]
 		upload_response = await self.request(method='post', url="/api/v2/__SERVICE_NAME__/upload", files=files)
-		
 		assert upload_response.status_code == 400
 	
 	async def test_max_files_in_limit(self):
@@ -149,13 +146,10 @@ class TestSVC(TestBaseTenantsAPIV2):
 			("files", ("img4.svg", BytesIO(b"Fake content 4"), "image/svg")),
 		]
 		upload_response = await self.request(method='post', url="/api/v2/__SERVICE_NAME__/upload", files=files)
-		
 		assert upload_response.status_code == 200
 	
 	async def test_x_tenant_authorized_api(self):
-		response = await self.request(
-			method='get', url='/api/v2/__SERVICE_NAME__/tenants', headers={'X-Tenant-ID': str(self.id_tenant)}
-			)
+		response = await self.request(method='get', url='/api/v2/__SERVICE_NAME__/tenants', headers={'X-Tenant-ID': str(self.id_tenant)})
 		assert response.status_code == 200
 		json: dict = response.json()
 		assert json == {'status': 'ok'}
