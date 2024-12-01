@@ -6,7 +6,7 @@ from base4.utilities.service.startup import service as app
 from base4.utilities.service.base import BaseAPIController
 from fastapi import Request, APIRouter
 
-router = APIRouter()
+
 
 class APIService(BaseAPIController):
     @api(
@@ -24,6 +24,7 @@ class APIService(BaseAPIController):
         service = self.service.OptionService()
         return await service.get_option_by_key(key)
     
-
+    
+router = APIRouter()
 APIService(router)
 app.include_router(router, prefix='/api/__SERVICE_NAME__')
