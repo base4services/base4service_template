@@ -148,6 +148,6 @@ class TestSVC(TestBaseTenantsAPIV2):
 		assert upload_response.status_code == 200
 	
 	
-	async def test_is_healthy(self):
+	async def test_is___SERVICE_NAME___healthy(self):
 		response = await self.request(method='get', url="/api/__SERVICE_NAME__/healthy")
 		assert response.status_code == 200
