@@ -26,59 +26,59 @@ class TestSVC(TestBaseTenantsAPIV2):
 	
 	async def test_option_by_key_multi_handler(self):
 		key = str(uuid.uuid4())
-		response = await self.request(method='post', url='/api/v2/__SERVICE_NAME__/by-key/%s' % key)
+		response = await self.request(method='post', url='/api/__SERVICE_NAME__/by-key/%s' % key)
 		assert response.status_code == 200
 		json: dict = response.json()
 		assert json == {'status': 'ok'}
 		
-		response = await self.request(method='get', url='/api/v2/__SERVICE_NAME__/by-key/%s' % key)
+		response = await self.request(method='get', url='/api/__SERVICE_NAME__/by-key/%s' % key)
 		assert response.status_code == 200
 		json: dict = response.json()
 		assert json == key
 		
-		response = await self.request(method='delete', url='/api/v2/__SERVICE_NAME__/by-key/%s' % key)
+		response = await self.request(method='delete', url='/api/__SERVICE_NAME__/by-key/%s' % key)
 		assert response.status_code == 200
 		json: dict = response.json()
 		assert json == {'status': 'ok'}
 		
-		response = await self.request(method='get', url='/api/v2/__SERVICE_NAME__/by-key/%s' % key)
+		response = await self.request(method='get', url='/api/__SERVICE_NAME__/by-key/%s' % key)
 		assert response.status_code == 200
 		json: dict = response.json()
 		assert json == {'status': 'not_found'}
 	
 	async def test_option_get_from_cache(self):
 		
-		response = await self.request(method='get', url="/api/v2/__SERVICE_NAME__/cached-datetime")
+		response = await self.request(method='get', url="/api/__SERVICE_NAME__/cached-datetime")
 		
 		assert response.status_code == 200
 		json_1: dict = response.json()
 		
-		response = await self.request(method='get', url="/api/v2/__SERVICE_NAME__/cached-datetime")
+		response = await self.request(method='get', url="/api/__SERVICE_NAME__/cached-datetime")
 		assert response.status_code == 200
 		json_2: dict = response.json()
 		assert json_1 == json_2
 	
 	async def test_option_if_cache_expired(self):
 		
-		response = await self.request(method='get', url="/api/v2/__SERVICE_NAME__/cached-datetime")
+		response = await self.request(method='get', url="/api/__SERVICE_NAME__/cached-datetime")
 		assert response.status_code == 200
 		json_1: dict = response.json()
 		
 		time.sleep(3)
-		response = await self.request(method='get', url="/api/v2/__SERVICE_NAME__/cached-datetime")
+		response = await self.request(method='get', url="/api/__SERVICE_NAME__/cached-datetime")
 		assert response.status_code == 200
 		json_2: dict = response.json()
 		assert json_1 != json_2
 	
 	async def test_option_by_key_1_on_1_handler(self):
 		key = str(uuid.uuid4())
-		response = await self.request(method='get', url='/api/v2/__SERVICE_NAME__/1on1/by-key/%s' % key)
+		response = await self.request(method='get', url='/api/__SERVICE_NAME__/1on1/by-key/%s' % key)
 		assert response.status_code == 200
 		json: dict = response.json()
 		assert json == key
 	
 	async def test_option_no_key_bug(self):
-		response = await self.request(method='get', url='/api/v2/__SERVICE_NAME__/no-key-bug')
+		response = await self.request(method='get', url='/api/__SERVICE_NAME__/no-key-bug')
 		assert response.status_code == 200
 		json: dict = response.json()
 		assert json == {'status': 'ok'}
@@ -86,7 +86,7 @@ class TestSVC(TestBaseTenantsAPIV2):
 	async def test_pydantic(self):
 
 		response = await self.request(method='post', url=
-			"/api/v2/__SERVICE_NAME__/pydantic",
+			"/api/__SERVICE_NAME__/pydantic",
 			body=test_json
 		)
 		assert response.status_code == 200
@@ -101,7 +101,7 @@ class TestSVC(TestBaseTenantsAPIV2):
 		
 		file_data = BytesIO(response.content)  # Create a file-like object
 		files = {"files": (f"img1.{ext}", file_data, f"image/{ext}")}
-		upload_response = await self.request(method='post', url="/api/v2/__SERVICE_NAME__/upload", files=files)
+		upload_response = await self.request(method='post', url="/api/__SERVICE_NAME__/upload", files=files)
 		
 		assert upload_response.status_code == 200
 		assert upload_response.json()[f"img1.{ext}"]['content_type'] == f'image/{ext}'
@@ -118,7 +118,7 @@ class TestSVC(TestBaseTenantsAPIV2):
 		files = {"files": (f"img1.{ext}", file_data, f"image/{ext}")}
 		upload_response = await self.request(
 			method='post', url=
-			"/api/v2/__SERVICE_NAME__/upload", files=files, data={"metadata": json.dumps(test_json)}
+			"/api/__SERVICE_NAME__/upload", files=files, data={"metadata": json.dumps(test_json)}
 		)
 		assert upload_response.status_code == 200
 		j = upload_response.json()
@@ -135,7 +135,7 @@ class TestSVC(TestBaseTenantsAPIV2):
 			("files", ("img4.svg", BytesIO(b"Fake content 4"), "image/svg")),
 			("files", ("img4.svg", BytesIO(b"Fake content 4"), "image/svg")),
 		]
-		upload_response = await self.request(method='post', url="/api/v2/__SERVICE_NAME__/upload", files=files)
+		upload_response = await self.request(method='post', url="/api/__SERVICE_NAME__/upload", files=files)
 		assert upload_response.status_code == 400
 	
 	async def test_max_files_in_limit(self):
@@ -145,11 +145,11 @@ class TestSVC(TestBaseTenantsAPIV2):
 			("files", ("img3.svg", BytesIO(b"Fake content 3"), "image/svg")),
 			("files", ("img4.svg", BytesIO(b"Fake content 4"), "image/svg")),
 		]
-		upload_response = await self.request(method='post', url="/api/v2/__SERVICE_NAME__/upload", files=files)
+		upload_response = await self.request(method='post', url="/api/__SERVICE_NAME__/upload", files=files)
 		assert upload_response.status_code == 200
 	
 	async def test_x_tenant_authorized_api(self):
-		response = await self.request(method='get', url='/api/v2/__SERVICE_NAME__/tenants', headers={'X-Tenant-ID': str(self.id_tenant)})
+		response = await self.request(method='get', url='/api/__SERVICE_NAME__/tenants', headers={'X-Tenant-ID': str(self.id_tenant)})
 		assert response.status_code == 200
 		json: dict = response.json()
 		assert json == {'status': 'ok'}
