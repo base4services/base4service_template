@@ -4,7 +4,7 @@ import time
 import requests
 
 current_file_path = os.path.abspath(os.path.dirname(__file__))
-from .test_base_tenants import TestBaseTenants, TestBaseTenantsAPIV2
+from .test_base_tenants import TestBaseTenantsAPIV2
 import uuid
 from base4.utilities.service.startup import service as app
 from fastapi.testclient import TestClient
