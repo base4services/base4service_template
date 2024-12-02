@@ -86,7 +86,7 @@ class TestSVC(TestBaseTenantsAPIV2):
 	# 	response = await self.request(
 	# 		method='post', url=
 	# 		"/api/__SERVICE_NAME__/pydantic",
-	# 		body=test_json
+	# 		json=test_json
 	# 		)
 	# 	assert response.status_code == 200
 	# 	assert response.json() == test_json
