@@ -3,12 +3,12 @@ import datetime
 from typing import Dict
 from base4.utilities.service.base import api
 from base4.utilities.service.startup import service as app
-from base4.utilities.service.base import BaseAPIController
+from base4.utilities.service.base import BaseAPIHandler
 from fastapi import Request, APIRouter
 
 
 
-class APIService(BaseAPIController):
+class APIService(BaseAPIHandler):
     @api(
         path='/healthy',
     )
