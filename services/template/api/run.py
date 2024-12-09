@@ -8,7 +8,7 @@ from fastapi import Request, APIRouter
 
 
 
-class APIService(BaseAPIHandler):
+class APIHandler(BaseAPIHandler):
     @api(
         path='/healthy',
     )
@@ -26,5 +26,5 @@ class APIService(BaseAPIHandler):
     
     
 router = APIRouter()
-APIService(router)
+APIHandler(router)
 app.include_router(router, prefix='/api/__SERVICE_NAME__')
