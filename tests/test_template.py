@@ -1,7 +1,18 @@
+import os
+import time
 
-from .test_base_tenants import TestBaseTenants
+import requests
 
-class TestTenants(TestBaseTenants):
+current_file_path = os.path.abspath(os.path.dirname(__file__))
+from .test_base_tenants import TestBaseTenantsAPIV2
 
-    async def test(self):
-        assert True
+
+class TestSVC(TestBaseTenantsAPIV2):
+	services = ['tenants', '__SERVICE_NAME__']
+	
+	async def setup(self):
+		await super().setup()
+	
+	async def test_is___SERVICE_NAME___healthy(self):
+		response = await self.request(method='get', url="/api/__SERVICE_NAME__/healthy")
+		assert response.status_code == 200
