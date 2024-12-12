@@ -11,13 +11,14 @@ router = APIRouter()
 @route(router=router, prefix='/api/__SERVICE_NAME__')
 class APIHandler(BaseAPIHandler):
     @api(
+        method='GET',
         path='/healthy',
     )
     async def healthy(self, request: Request):
         return {'status': 'ok'}
     
     @api(
-        methods=['GET'],
+        method='GET',
         path='/options/by-key/{key}',
         response_model=Dict[str, str]
     )
