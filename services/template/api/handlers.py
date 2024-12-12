@@ -1,12 +1,15 @@
 import os
 import datetime
 from typing import Dict
-from base4.utilities.service.base import api
+from base4.utilities.service.base import api, route
 from base4.utilities.service.startup import service as app
 from base4.utilities.service.base import BaseAPIHandler
 from fastapi import Request, APIRouter
 
+router = APIRouter()
 
+
+@route(router=router, prefix='/api/__SERVICE_NAME__')
 class APIHandler(BaseAPIHandler):
     @api(
         path='/healthy',
@@ -22,8 +25,3 @@ class APIHandler(BaseAPIHandler):
     async def get_by_key(self, request: Request, key: str) -> dict:
         service = self.service.OptionService()
         return await service.get_option_by_key(key)
-    
-    
-router = APIRouter()
-APIHandler(router)
-app.include_router(router, prefix='/api/__SERVICE_NAME__')
