@@ -7,7 +7,6 @@ from base4.utilities.service.base import BaseAPIHandler
 from fastapi import Request, APIRouter
 
 
-
 class APIHandler(BaseAPIHandler):
     @api(
         path='/healthy',
