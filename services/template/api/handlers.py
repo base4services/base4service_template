@@ -1,27 +1,26 @@
-import os
-import datetime
-from typing import Dict
 from base4.utilities.service.base import api, route
 from base4.utilities.service.base import BaseAPIHandler
 from fastapi import Request, APIRouter
 
-router = APIRouter()
 
-
-@route(router=router, prefix='/api/__SERVICE_NAME__')
+@route(router=APIRouter(), prefix='/api/__SERVICE_NAME__')
 class APIHandler(BaseAPIHandler):
-    @api(
-        method='GET',
-        path='/healthy',
-    )
-    async def healthy(self, request: Request):
-        return {'status': 'ok'}
+    def __init__(self, router):
+        self.service = 'example service module path'
+        self.schema = 'example service schema path'
+        self.model = 'example service model path'
+        super().__init__(router)
     
     @api(
         method='GET',
-        path='/options/by-key/{key}',
-        response_model=Dict[str, str]
+        path='/example',
+        # response_model = Dict[str, str],
+        # cache: int = 0,
+        # is_accesslog: bool = True,
+        # upload_allowed_file_types: Optional[List[str]] = None,
+        # upload_max_file_size: Optional[int] = None,
+        # upload_max_files: Optional[int] = None
+        # is_authorized: bool = False,
     )
-    async def get_by_key(self, request: Request, key: str) -> dict:
-        service = self.service.OptionService()
-        return await service.get_option_by_key(key)
+    async def example(self, request: Request) -> dict:
+        return {"hello": "world"}
