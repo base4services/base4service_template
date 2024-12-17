@@ -1,5 +1,4 @@
-from base4.utilities.service.base import api, route
-from base4.utilities.service.base import BaseAPIHandler
+from base4.utilities.service.base import BaseAPIHandler, api, route
 from fastapi import Request, APIRouter
 
 
