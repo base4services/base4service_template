@@ -20,6 +20,7 @@ class APIHandler(BaseAPIHandler):
         # upload_max_file_size: Optional[int] = None,
         # upload_max_files: Optional[int] = None
         # is_authorized: bool = False,
+        # is_public=False,
     )
     async def example(self, request: Request) -> dict:
         return {"hello": "world"}
