@@ -1,5 +1,5 @@
 from base4.utilities.service.base import BaseAPIHandler, api, route
-from fastapi import Request, APIRouter
+from fastapi import APIRouter, Request
 
 
 @route(router=APIRouter(), prefix='/api/__SERVICE_NAME__')
