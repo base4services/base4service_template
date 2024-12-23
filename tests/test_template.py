@@ -4,10 +4,10 @@ import time
 import requests
 
 current_file_path = os.path.abspath(os.path.dirname(__file__))
-from .test_base_tenants import TestBaseTenantsAPIV2
+from .test_base import TestBase
 
 
-class TestSVC(TestBaseTenantsAPIV2):
+class TestSVC(TestBase):
 	services = ['tenants', '__SERVICE_NAME__']
 	
 	async def setup(self):
