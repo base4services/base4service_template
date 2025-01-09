@@ -1,15 +1,12 @@
-from base4.utilities.service.base import BaseAPIHandler, api, route
+from base4.utilities.service.base import CRUDAPIHandler, BaseAPIHandler, api, route
 from fastapi import APIRouter, Request
 
 
 @route(router=APIRouter(), prefix='/api/__SERVICE_NAME__')
-class APIHandler(BaseAPIHandler):
+class APIHandler(CRUDAPIHandler):
     def __init__(self, router):
-        self.service = 'example service module path'
-        self.schema = 'example service schema path'
-        self.model = 'example service model path'
-        super().__init__(router)
-    
+        super().__init__(router, service='example', schema='example', model='example')
+
     @api(
         method='GET',
         path='/example',
