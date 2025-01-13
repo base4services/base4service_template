@@ -3,6 +3,7 @@ from fastapi import APIRouter, Request
 
 
 MAIN_API_PREFIX = '/api/__SERVICE_NAME__'
+
 @route(router=APIRouter(), prefix=f'{MAIN_API_PREFIX}')
 class APIHandler(CRUDAPIHandler):
     def __init__(self, router):
