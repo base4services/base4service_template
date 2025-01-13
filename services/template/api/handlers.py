@@ -2,10 +2,11 @@ from base4.utilities.service.base import CRUDAPIHandler, BaseAPIHandler, api, ro
 from fastapi import APIRouter, Request
 
 
-@route(router=APIRouter(), prefix='/api/__SERVICE_NAME__')
+MAIN_API_PREFIX = '/api/__SERVICE_NAME__'
+@route(router=APIRouter(), prefix=f'{MAIN_API_PREFIX}')
 class APIHandler(CRUDAPIHandler):
     def __init__(self, router):
-        super().__init__(router, service='example', schema='example', model='example')
+        super().__init__(router, service='example')
 
     @api(
         method='GET',
